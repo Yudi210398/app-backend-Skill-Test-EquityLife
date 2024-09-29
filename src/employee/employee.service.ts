@@ -12,9 +12,8 @@ export class EmployeeService {
     @Inject(WINSTON_MODULE_NEST_PROVIDER) readonly logger: Logger,
   ) {}
 
-  async getData(): Promise<any> {
+  async getData(): Promise<any[]> {
     const employee = await this.pool.connect();
-
     try {
       const res = await employee.query(`
         SELECT 
@@ -31,7 +30,7 @@ export class EmployeeService {
 
       const hasilData = [];
 
-      await res.rows.map((emp) => {
+      res.rows.forEach((emp) => {
         let path_level = 0;
         let path_hierarchy = emp?.employee_name;
         let employee_format = emp?.employee_name;
@@ -40,9 +39,13 @@ export class EmployeeService {
         while (currentManager && currentManager !== '(null)') {
           path_level++;
           path_hierarchy = currentManager + ' -> ' + path_hierarchy;
-          currentManager =
-            res.rows.find((e) => e.employee_name === currentManager)
-              ?.manager_name || null;
+          const foundEmployee = res.rows.find(
+            (e) => e.employee_name === currentManager,
+          );
+
+          // Jika ditemukan karyawan (manajer) dengan nama yang sesuai, perbarui currentManager
+          if (foundEmployee) currentManager = foundEmployee.manager_name;
+          else currentManager = null; // Jika tidak ditemukan, set currentManager ke null
         }
 
         employee_format = `${' '.repeat(path_level * 2)}|__${emp.employee_name}`;

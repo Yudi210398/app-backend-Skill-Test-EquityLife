@@ -15,6 +15,7 @@ export class AuthService {
   ) {}
 
   async login(dataLogin: LoginDTO) {
+    console.log(`data wkwkwk`);
     const data = await this.validate(dataLogin);
     const payload = {
       username: data.username,

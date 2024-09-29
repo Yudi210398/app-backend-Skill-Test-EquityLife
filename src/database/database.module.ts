@@ -16,6 +16,9 @@ import * as bcrypt from 'bcrypt';
           port: 5432,
           password: process.env.PASSPOSTGRE, // Ambil password dari environment variable
           database: 'testptequitylife',
+          max: 20, // Naikkan jumlah maksimal koneksi
+          idleTimeoutMillis: 30000, // Koneksi idle akan dihapus setelah 30 detik
+          connectionTimeoutMillis: 2000, // Waktu m
         });
 
         try {
